@@ -9,20 +9,11 @@ class Authorization extends Base
         'settleWithAuth' => '',
         'card' => '',
     );
-    /**
-    = 'refNum_' . uniqid();
-$auth->amount = 1000 + rand(200, 3000);
-$auth->settleWithAuth = 'true';
-
-$card = new \StdClass();
-$card->cardNum = '4530910000012345';
-$card->type = 'VI';
-$card->lastDigits = '2345';
-$auth->card = $card;
-*/
    
     public function toArray()
     {
+        /** Temporary implementation (just for test class to work) */
+
         foreach ($this as $k => $v)
         {
             $array[$k] = $v;
