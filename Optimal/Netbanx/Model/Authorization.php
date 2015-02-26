@@ -1,8 +1,15 @@
 <?php
 namespace Optimal\Netbanx\Model;
 
+/**
+ * Authorization model
+ */
 class Authorization extends Base
 {
+    /**
+     * Bag properties definition 
+     * @var array
+     */
     protected $_fields = array(
         'merchantRefNum' => '',
         'amount' => '',
@@ -13,23 +20,16 @@ class Authorization extends Base
     public function toArray()
     {
         /** Temporary implementation (just for test class to work) */
-
-        foreach ($this as $k => $v)
-        {
-            $array[$k] = $v;
-        }
-
+        $array = parent::toArray();
+        
         $array['card'] = null;
         foreach ($this->card as $k => $v) 
         {
             $array['card'][$k] = $v;
         }
-
         $array['card']['cardExpiry']['month'] = 11;
         $array['card']['cardExpiry']['year'] = 2019;        
         $array['billingDetails'] = array('street' => '511 rue abelard', 'zip' => 'H3E1B6', 'country' => 'CA', 'city' => 'Verdun',);
-
-        unset($array['_fields']);
 
         return $array;
     }
