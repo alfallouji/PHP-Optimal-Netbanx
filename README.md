@@ -49,6 +49,11 @@ You can use composer to use this library.
 }
 ```
 
+You can use composer to generate autoload map files.
+
+``` composer dumpautoload ```
+
+
 ## How to start
 
 
