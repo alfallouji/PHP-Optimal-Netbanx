@@ -16,65 +16,37 @@
 namespace Optimal\Netbanx\Service;
 
 /**
- * File:        Authorization.php
+ * File:        Settlement.php
  * Project:     PHP-Optimal-Netbanx
  *
  * @author      Al-Fallouji Bashar
  * 
- * Authorization service
+ * Settlement service
  */
-class Authorization extends Base
+class Settlement extends Base
 {
     /**
-     * Definition of services exposed for Authorization
+     * Definition of services exposed for Settlement
      * Refer to https://developer.optimalpayments.com/en/documentation/card-payments-api/api/ 
      * @var array
      */
     protected $_services = array(
-        // Crate an athorization or purchase
-        'create' => array(
-            'method' => 'POST',
-            'url' => '/auths',
-            'params' => array(
-                'payload',
-            )
-        ),
-
-        // Get an authorization
+        // Get a settlement
         'get' => array(
             'method' => 'GET',
-            'url' => '/auths/{ID}',
-            'params' => array(
-                'id',
-            )
-        ),
-
-        // Update an authorization
-        'update' => array(
-            'method' => 'PUT',
-            'url' => '/auths/{ID}',
-            'params' => array(
-                'id',
-                'payload',
-            )
-        ),
-
-        // Reverse an authorization
-        'reverse' => array(
-            'method' => 'POST',
-            'url' => '/auths/{ID}/voidauths',
-            'params' => array(
-                'id',
-                'payload',
-             ),
-        ),
-
-        // Get an authorization reversal
-        'getReversal' => array(
-            'method' => 'GET',
-            'url' => '/voidauths/{ID}',
+            'url' => '/settlements/{ID}',
             'params' => array(
                 'id'
+            ),
+        ),
+
+        // Cancel a settlement
+        'cancel' => array(
+            'method' => 'PUT',
+            'url' => '/settlements/{ID}',
+            'params' => array(
+                'id',
+                'payload'
             ),
         ),
     );
