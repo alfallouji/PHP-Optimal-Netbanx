@@ -44,6 +44,16 @@ function assertTest($v)
 }
 
 $baseDir = __DIR__ . '/../../../';
+if (getenv('TRAVIS')) 
+{
+    $config['apiPassword'] = getenv('apiPassword');
+    $config['apiKey'] = getenv('apiKey');
+    $config['accountId'] = getenv('accountId');
+}
+else
+{
+    $config = require($baseDir . 'tests/conf/credentials.php');
+}
 
 // Using composer autoloader
 require($baseDir . 'vendor/autoload.php');
@@ -73,7 +83,6 @@ $billingDetails->country = 'CA';
 
 $auth->billingDetails = $billingDetails;
 
-$config = require($baseDir . 'tests/conf/credentials.php');
 $httpClient = new \Optimal\Netbanx\Client\Http($config['apiKey'], $config['apiPassword'], $config['accountId'], 'staging');
 $authClient = new \Optimal\Netbanx\Service\Authorization($httpClient);
 
