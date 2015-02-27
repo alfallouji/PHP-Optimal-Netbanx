@@ -64,6 +64,19 @@ abstract class Base
      */
     public function toArray()
     {
-        return $this->_values;
+        $array = array();
+        foreach ($this->_values as $k => $v) 
+        {
+            if (is_object($v)) 
+            {
+                $array[$k] = $v->toArray();
+            }
+            else
+            {
+                $array[$k] = $v;
+            }
+        }
+
+        return $array;
     }
 }
