@@ -1,0 +1,7 @@
+{
+    "name": "alfallouji/php_optimal_netbanx",
+    "description": "An OOP PHP Client for the Card payments Optimal Netbanx Restful service",
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
