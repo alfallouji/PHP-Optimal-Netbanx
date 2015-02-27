@@ -20,7 +20,7 @@
  *
  * @author      Al-Fallouji Bashar
  * 
- * Authorization Functionnal test
+ * Authorization Functional test
  */
 
 /**
