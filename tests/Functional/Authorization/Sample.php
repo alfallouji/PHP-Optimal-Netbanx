@@ -32,11 +32,12 @@ require($baseDir . 'Optimal/Netbanx/Model/Authorization.php');
 require($baseDir . 'Optimal/Netbanx/Model/Card.php');
 require($baseDir . 'Optimal/Netbanx/Model/BillingDetails.php');
 require($baseDir . 'Optimal/Netbanx/Model/CardExpiry.php');
+require($baseDir . 'Optimal/Netbanx/Model/AuthorizationReversal.php');
 
 $auth = new \Optimal\Netbanx\Model\Authorization();
 $auth->merchantRefNum = 'refNum_' . uniqid();
-$auth->amount = 1000 + rand(200, 3000);
-$auth->settleWithAuth = 'true';
+$auth->amount = 10000 + rand(200, 3000);
+$auth->settleWithAuth = 'false';
 
 $card = new \Optimal\Netbanx\Model\Card();
 $card->cardNum = '4530910000012345';
@@ -62,10 +63,47 @@ $config = require($baseDir . 'tests/conf/credentials.php');
 $httpClient = new \Optimal\Netbanx\Client\Http($config['apiKey'], $config['apiPassword'], $config['accountId'], 'staging');
 $authClient = new \Optimal\Netbanx\Service\Authorization($httpClient);
 
+echo PHP_EOL . 'Testing Authorization creation';
 $result = $authClient->create($auth);
-echo PHP_EOL . PHP_EOL;
-print_r($result['result']);
+$id = isset($result['result']['id']) ? $result['result']['id'] : null;
+if ($id)
+{
+    echo "\t[OK]" . PHP_EOL;
+    echo 'Authorization id is : ' . $id . PHP_EOL;
+}
+else
+{
+    echo "\t[FAILED]" . PHP_EOL;
+    die();
+}
 
+echo PHP_EOL . 'Testing Authorization get';
 $result = $authClient->get($result['result']['id']);
-echo PHP_EOL . PHP_EOL;
-print_r($result);
+$getId = isset($result['result']['id']) ? $result['result']['id'] : null;
+
+if ($getId && $getId == $id) 
+{
+    echo "\t[OK]" . PHP_EOL;
+}
+else
+{
+    echo "\t[FAILED]" . PHP_EOL;
+    die();
+}
+
+$authReversal = new \Optimal\Netbanx\Model\AuthorizationReversal();
+$authReversal->id = $getId;
+$authReversal->amount = 200;
+$authReversal->merchantRefNum = 'Refund_for_' . $auth->merchantRefNum;
+echo PHP_EOL . 'Reversing Authorization for an amount of ' . $authReversal->amount;
+$result = $authClient->reverse($getId, $authReversal);
+
+if (isset($result['result']['status']) && $result['result']['status'] == 'COMPLETED')
+{
+    echo "\t[OK]" . PHP_EOL;
+}
+else
+{
+    echo "\t[FAILED]" . PHP_EOL;
+    die();
+}
