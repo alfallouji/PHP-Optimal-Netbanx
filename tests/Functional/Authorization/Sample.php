@@ -97,3 +97,5 @@ $authReversal->merchantRefNum = 'Refund_for_' . $auth->merchantRefNum;
 echo PHP_EOL . 'Reversing Authorization for an amount of ' . $authReversal->amount;
 $result = $authClient->reverse($getId, $authReversal);
 assertTest(isset($result['result']['status']) && $result['result']['status'] == 'COMPLETED');
+
+exit(0);
