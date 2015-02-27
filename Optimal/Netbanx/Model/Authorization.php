@@ -11,9 +11,9 @@ class Authorization extends Base
      * @var array
      */
     protected $_fields = array(
-        'merchantRefNum' => '',
-        'amount' => '',
-        'settleWithAuth' => '',
+        'merchantRefNum' => 'string',
+        'amount' => 'string',
+        'settleWithAuth' => 'string',
         'card' => 'Card',
         'billingDetails' => 'BillingDetails',
     );
