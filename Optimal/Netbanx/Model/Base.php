@@ -70,7 +70,7 @@ abstract class Base
     {
         if (isset($this->_fields[$key])) 
         {
-            return $this->_values[$key];
+            return isset($this->_values[$key]) ? $this->_values[$key] : null;
         }
 
         throw new \Exception('Undefined field : ' . $key);
