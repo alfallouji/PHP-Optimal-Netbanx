@@ -33,6 +33,7 @@ require($baseDir . 'Optimal/Netbanx/Model/Card.php');
 require($baseDir . 'Optimal/Netbanx/Model/BillingDetails.php');
 require($baseDir . 'Optimal/Netbanx/Model/CardExpiry.php');
 require($baseDir . 'Optimal/Netbanx/Model/AuthorizationReversal.php');
+require($baseDir . 'Optimal/Netbanx/Model/MerchantDescriptor.php');
 
 $auth = new \Optimal\Netbanx\Model\Authorization();
 $auth->merchantRefNum = 'refNum_' . uniqid();
@@ -80,7 +81,6 @@ else
 echo PHP_EOL . 'Testing Authorization get';
 $result = $authClient->get($result['result']['id']);
 $getId = isset($result['result']['id']) ? $result['result']['id'] : null;
-
 if ($getId && $getId == $id) 
 {
     echo "\t[OK]" . PHP_EOL;
@@ -97,7 +97,6 @@ $authReversal->amount = 200;
 $authReversal->merchantRefNum = 'Refund_for_' . $auth->merchantRefNum;
 echo PHP_EOL . 'Reversing Authorization for an amount of ' . $authReversal->amount;
 $result = $authClient->reverse($getId, $authReversal);
-
 if (isset($result['result']['status']) && $result['result']['status'] == 'COMPLETED')
 {
     echo "\t[OK]" . PHP_EOL;
