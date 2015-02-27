@@ -98,4 +98,34 @@ abstract class Base
 
         return $array;
     }
+
+    /**
+     * Initialize object from array
+     * 
+     * @param array $params Assoc array of key value pair
+     * 
+     * @return void
+     */
+    public function initFromArray(array $params = array())
+    {
+        foreach ($params as $k => $v) 
+        {
+            if (!isset($this->_fields[$k])) 
+            {
+                continue;
+            }
+
+            if (is_array($v)) 
+            {
+                $className = '\\Optimal\\Netbanx\\Model\\' . $this->_fields[$k];
+                $object = new $className();
+                $object->initFromArray($v);
+                $this->$k = $object;
+            }
+            else
+            {
+                $this->$k = $v;
+            }
+        }
+    }
 }
