@@ -15,5 +15,9 @@ class Card extends Base
         'cardNum' => 'string',
         'lastDigits' => 'string',
         'cardExpiry' => 'CardExpiry',
+        'cvv' => 'string',
+        'track1' => 'string',
+        'track2' => 'string',
+        'paymentToken' => 'string',
     );
 }

@@ -2,21 +2,22 @@
 namespace Optimal\Netbanx\Model;
 
 /**
- * BillingDetails model
+ * ShippingDetails model
  */
-class BillingDetails extends Base
+class ShippingDetails extends Base
 {
     /**
      * Bag properties definition 
      * @var array
      */
     protected $_fields = array(
+        'carrier' => 'string',
+        'shipMethod' => 'string',
+        'recipientName' => 'string',
         'street' => 'string',
-        'street2' => 'string',        
         'zip' => 'string',
         'country' => 'string',
         'city' => 'Expiry',
         'state' => 'string',
-        'phone' => 'string',
     );
 }
