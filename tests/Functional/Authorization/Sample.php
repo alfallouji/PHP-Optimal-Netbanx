@@ -39,7 +39,7 @@ function assertTest($v)
     else
     {
         echo "\t[FAILED]" . PHP_EOL;
-        die();
+        exit(-1);
     }
 }
 
