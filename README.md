@@ -1,3 +1,6 @@
+
+[![Build Status](https://travis-ci.org/alfallouji/PHP-Optimal-Netbanx.svg?branch=master)](https://travis-ci.org/alfallouji/PHP-Optimal-Netbanx)
+
 # PHP-Optimal-Netbanx
 
 This is an OOP PHP Client for the Card payments Optimal Netbanx Restful service.
