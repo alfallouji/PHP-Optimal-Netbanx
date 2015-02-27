@@ -3,7 +3,7 @@ language: php
 install:
     - travis_retry composer install
 
-script: "./tests/run-tests.sh"
+script: ./tests/run-tests.sh
 
 php: 
     - "5.3"
