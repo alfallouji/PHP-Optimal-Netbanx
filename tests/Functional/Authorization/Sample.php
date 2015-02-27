@@ -22,18 +22,31 @@
  * 
  * Authorization Functionnal test
  */
+
+/**
+ * Helper function for test
+ * 
+ * @param boolean $v Value to assert
+ *
+ * @return void
+ */
+function assertTest($v) 
+{
+    if ($v)
+    {
+        echo "\t[OK]" . PHP_EOL;
+    }
+    else
+    {
+        echo "\t[FAILED]" . PHP_EOL;
+        die();
+    }
+}
+
 $baseDir = __DIR__ . '/../../../';
 
-require($baseDir . 'Optimal/Netbanx/Client/Http.php');
-require($baseDir . 'Optimal/Netbanx/Service/Base.php');
-require($baseDir . 'Optimal/Netbanx/Service/Authorization.php');
-require($baseDir . 'Optimal/Netbanx/Model/Base.php');
-require($baseDir . 'Optimal/Netbanx/Model/Authorization.php');
-require($baseDir . 'Optimal/Netbanx/Model/Card.php');
-require($baseDir . 'Optimal/Netbanx/Model/BillingDetails.php');
-require($baseDir . 'Optimal/Netbanx/Model/CardExpiry.php');
-require($baseDir . 'Optimal/Netbanx/Model/AuthorizationReversal.php');
-require($baseDir . 'Optimal/Netbanx/Model/MerchantDescriptor.php');
+// Using composer autoloader
+require($baseDir . 'vendor/autoload.php');
 
 $auth = new \Optimal\Netbanx\Model\Authorization();
 $auth->merchantRefNum = 'refNum_' . uniqid();
@@ -64,45 +77,23 @@ $config = require($baseDir . 'tests/conf/credentials.php');
 $httpClient = new \Optimal\Netbanx\Client\Http($config['apiKey'], $config['apiPassword'], $config['accountId'], 'staging');
 $authClient = new \Optimal\Netbanx\Service\Authorization($httpClient);
 
+// Test 1
 echo PHP_EOL . 'Testing Authorization creation';
 $result = $authClient->create($auth);
 $id = isset($result['result']['id']) ? $result['result']['id'] : null;
-if ($id)
-{
-    echo "\t[OK]" . PHP_EOL;
-    echo 'Authorization id is : ' . $id . PHP_EOL;
-}
-else
-{
-    echo "\t[FAILED]" . PHP_EOL;
-    die();
-}
+assertTest($id);
 
+// Test 2
 echo PHP_EOL . 'Testing Authorization get';
 $result = $authClient->get($result['result']['id']);
 $getId = isset($result['result']['id']) ? $result['result']['id'] : null;
-if ($getId && $getId == $id) 
-{
-    echo "\t[OK]" . PHP_EOL;
-}
-else
-{
-    echo "\t[FAILED]" . PHP_EOL;
-    die();
-}
+assertTest($getId && $getId == $id);
 
+// Test 3
 $authReversal = new \Optimal\Netbanx\Model\AuthorizationReversal();
 $authReversal->id = $getId;
 $authReversal->amount = 200;
 $authReversal->merchantRefNum = 'Refund_for_' . $auth->merchantRefNum;
 echo PHP_EOL . 'Reversing Authorization for an amount of ' . $authReversal->amount;
 $result = $authClient->reverse($getId, $authReversal);
-if (isset($result['result']['status']) && $result['result']['status'] == 'COMPLETED')
-{
-    echo "\t[OK]" . PHP_EOL;
-}
-else
-{
-    echo "\t[FAILED]" . PHP_EOL;
-    die();
-}
+assertTest(isset($result['result']['status']) && $result['result']['status'] == 'COMPLETED');
