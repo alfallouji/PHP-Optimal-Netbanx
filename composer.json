@@ -10,7 +10,7 @@
     },
 	
 	"autoload": {
-		"psr-0": { "Optimal\\": "Optimal/" }
+        "psr-0": { "Optimal\\": "Optimal/" }
 	},
 
 	"authors": [
@@ -19,5 +19,5 @@
                   "email": "bashar@alfallouji.com"
               }
          ]
-	}
+    }
 }
