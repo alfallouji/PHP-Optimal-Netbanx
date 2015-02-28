@@ -10,7 +10,7 @@
     },
 	
 	"autoload": {
-        "psr-0": { "Optimal\\": "Optimal/" }
+        "psr-4": { "Optimal\\": "Optimal/" }
 	},
 
 	"authors": [
