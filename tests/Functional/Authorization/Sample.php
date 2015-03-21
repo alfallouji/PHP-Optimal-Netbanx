@@ -61,7 +61,7 @@ require($baseDir . 'vendor/autoload.php');
 $auth = new \Optimal\Netbanx\Model\Authorization();
 $auth->merchantRefNum = 'refNum_' . uniqid();
 $auth->amount = 10000 + rand(200, 3000);
-$auth->settleWithAuth = 'false';
+$auth->settleWithAuth = false;
 
 $card = new \Optimal\Netbanx\Model\Card();
 $card->cardNum = '4530910000012345';
@@ -84,27 +84,33 @@ $billingDetails->country = 'CA';
 $auth->billingDetails = $billingDetails;
 
 $httpClient = new \Optimal\Netbanx\Client\Http($config['apiKey'], $config['apiPassword'], $config['accountId'], 'staging');
-$authClient = new \Optimal\Netbanx\Service\Authorization($httpClient);
+$service = new \Optimal\Netbanx\Service\Authorization($httpClient);
 
-// Test 1
-echo PHP_EOL . 'Testing Authorization creation';
-$result = $authClient->create($auth);
+// Test 1 - create auth
+echo PHP_EOL . 'Testing Authorization creation for ' . $auth->amount;
+$result = $service->create($auth);
 $id = isset($result['result']['id']) ? $result['result']['id'] : null;
 assertTest($id);
 
-// Test 2
-echo PHP_EOL . 'Testing Authorization get';
-$result = $authClient->get($result['result']['id']);
+// Test 2 - get auth
+echo PHP_EOL . 'Testing Authorization get for ' . $id;
+$result = $service->get($id);
 $getId = isset($result['result']['id']) ? $result['result']['id'] : null;
 assertTest($getId && $getId == $id);
 
-// Test 3
+// Test 3 - partial reverse of auth
 $authReversal = new \Optimal\Netbanx\Model\AuthorizationReversal();
 $authReversal->id = $getId;
-$authReversal->amount = 200;
-$authReversal->merchantRefNum = 'Refund_for_' . $auth->merchantRefNum;
-echo PHP_EOL . 'Reversing Authorization for an amount of ' . $authReversal->amount;
-$result = $authClient->reverse($getId, $authReversal);
+$authReversal->amount = rand(500, 1000);
+$authReversal->merchantRefNum = 'Reverse_for_' . $auth->merchantRefNum;
+echo PHP_EOL . 'Testing Authorization reverse for an amount of ' . $authReversal->amount;
+$result = $service->reverse($getId, $authReversal);
 assertTest(isset($result['result']['status']) && $result['result']['status'] == 'COMPLETED');
 
+// Test 4 - settle authorization
+echo PHP_EOL . 'Testing Authorization settlement';
+$result = $service->settle($id, array('merchantRefNum' => $auth->merchantRefNum));
+assertTest($result['code'] == 200 && isset($result['result']['id']));
+
+// Exit with success return code (for travis) 
 exit(0);
