@@ -74,7 +74,14 @@ abstract class Base
                 break;
 
                 case 'payload':
-                    $payload = $args[$k]->toArray();
+                    if (is_object($args[$k]))
+                    {
+                        $payload = $args[$k]->toArray();
+                    }
+                    else
+                    {
+                        $payload = $args[$k];
+                    }
                 break;
             }
         }

@@ -69,6 +69,16 @@ class Authorization extends Base
              ),
         ),
 
+        // Settle an authorization
+        'settle' => array(
+            'method' => 'POST',
+            'url' => '/auths/{ID}/settlements',
+            'params' => array(
+                'id',
+                'payload',
+            )
+        ),
+
         // Get an authorization reversal
         'getReversal' => array(
             'method' => 'GET',
