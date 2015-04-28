@@ -39,12 +39,24 @@ class Http
     private $_stagingUrl = 'https://api.test.netbanx.com/cardpayments/v1/accounts/{ACCOUNT_ID}';
 
     /**
-     * Url for production 
+     * Url for production
      * @var string
      */
     private $_productionUrl = 'https://api.netbanx.com/cardpayments/v1/accounts/{ACCOUNT_ID}';
 
-    /** 
+    /**
+     * Account id
+     * @var string
+     */
+    private $_accountId = null;
+
+    /**
+     * Mode (can either be staging or production)
+     * @var string
+     */
+    private $_mode = 'staging';
+
+    /**
      * Url of the service
      * @var string
      */
@@ -64,14 +76,16 @@ class Http
 
     /**
      * Class constructor
-     * 
+     *
      * @param int $clientId Client id (api id)
      * @param string $clentPassword Client password (api password)
      * @param int $accountId Account id
      * @param string $mode Can be either staging or production
      */
     public function __construct($clientId, $clientPassword, $accountId, $mode = 'staging')
-    {        
+    {
+        $this->_mode = $mode;
+        $this->_accountId = $accountId;
         $this->setAccount($accountId, $mode);
         $this->_clientId = $clientId;
         $this->_clientPassword = $clientPassword;
@@ -84,7 +98,7 @@ class Http
      * @param mixed  $parameters Array of parameters
      * @param string $httpMethod HTTP Method
      * @param array  $httpHeaders HTTP Headers
-     * 
+     *
      * @return array
      */
     public function executeRequest($url, $parameters = array(), $httpMethod = self::HTTP_METHOD_GET, array $httpHeaders = null)
@@ -99,7 +113,7 @@ class Http
         $httpHeaders['Authorization'] = 'Basic ' . base64_encode($this->_clientId .  ':' . $this->_clientPassword);
         $httpHeaders['content-type'] = 'application/json;charset=UTF-8';
 
-        switch($httpMethod) 
+        switch($httpMethod)
         {
             case self::HTTP_METHOD_POST:
                 $curlOptions[CURLOPT_POST] = true;
@@ -109,11 +123,11 @@ class Http
             break;
 
             case self::HTTP_METHOD_GET:
-                if (is_array($parameters)) 
+                if (is_array($parameters))
                 {
                     $url .= '?' . http_build_query($parameters, null, '&');
-                } 
-                elseif ($parameters) 
+                }
+                elseif ($parameters)
                 {
                     $url .= '?' . $parameters;
                 }
@@ -124,10 +138,10 @@ class Http
         }
 
         $curlOptions[CURLOPT_URL] = $url;
-        if (is_array($httpHeaders)) 
+        if (is_array($httpHeaders))
         {
             $header = array();
-            foreach($httpHeaders as $key => $parsed_urlvalue) 
+            foreach($httpHeaders as $key => $parsed_urlvalue)
             {
                 $header[] = "$key: $parsed_urlvalue";
             }
@@ -137,36 +151,36 @@ class Http
         $ch = curl_init();
         curl_setopt_array($ch, $curlOptions);
 
-        if (!empty($this->curl_options)) 
+        if (!empty($this->curl_options))
         {
             curl_setopt_array($ch, $this->curl_options);
         }
-        
+
         $result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
-        if ($curl_error = curl_error($ch)) 
+        if ($curl_error = curl_error($ch))
         {
             throw new Exception($curl_error, Exception::CURL_ERROR);
-        } 
-        else 
+        }
+        else
         {
             $json_decode = json_decode($result, true);
         }
-        
+
         curl_close($ch);
-        
+
         return array(
             'result' => (null === $json_decode) ? $result : $json_decode,
             'code' => $http_code,
             'content_type' => $content_type
         );
-    }    
+    }
 
     /**
      * Get webservice URL
-     * 
+     *
      * @return string Webservice URL
      */
     public function getUrl()
@@ -175,14 +189,14 @@ class Http
     }
 
     /**
-     * Set account Id 
-     * 
+     * Set account Id
+     *
      * @param int $accountId Account id
      * @param string $mode Can be either production or staging
      *
      * @return void
      */
-    public function setAccount($accountId, $mode = 'staging') 
+    public function setAccount($accountId, $mode = 'staging')
     {
         $acceptedModes = array('production', 'staging');
         if (!in_array($mode, $acceptedModes))
@@ -190,11 +204,23 @@ class Http
             throw new \Exception('Invalid value passed for mode (accepted values are ' . explode(', ', $acceptedModes) . ' : ' . $mode);
         }
 
-        if ('production' == $mode) 
+        $this->updateUrl($accountId, $mode);
+    }
+
+    /**
+     * Update the webservice url based on the account id and mode
+     * @param int $accountId Account id
+     * @param string $mode Can be either production or staging
+     *
+     * @return void
+     */
+    public function updateUrl($accountId, $mode = 'staging')
+    {
+        if ('production' == $mode)
         {
             $this->_url = $this->_productionUrl;
         }
-        else 
+        else
         {
             $this->_url = $this->_stagingUrl;
         }
@@ -204,15 +230,16 @@ class Http
 
     /**
      * Set the webservice main URL's for prod and staging
-     * 
+     *
      * @param string $stagingUrl Main URL for staging
      * @param string $productionUrl Main URL for production
-     * 
+     *
      * @return void
      */
     public function setWebserviceUrls($stagingUrl, $productionUrl)
     {
         $this->_stagingUrl = $stagingUrl;
         $this->_productionUrl = $productionUrl;
+        $this->updateUrl($this->_accountId, $this->_mode);
     }
 }
