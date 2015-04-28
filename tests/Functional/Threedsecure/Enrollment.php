@@ -81,11 +81,17 @@ $httpClient = new \Optimal\Netbanx\Client\Http($config['apiKey'], $config['apiPa
 $httpClient->setWebserviceUrls('https://api.test.netbanx.com/threedsecure/v1/accounts/{ACCOUNT_ID}', 'https://api.netbanx.com/threedsecure/v1/accounts/{ACCOUNT_ID}');
 $service = new \Optimal\Netbanx\Service\Enrollment($httpClient);
 
-// Test 1 - create auth
-echo PHP_EOL . 'Testing Enrollment creation for ' . $enrollment->amount;
+// Test 1 - do an enrollment lookup
+echo PHP_EOL . 'Testing Enrollment lookup for ' . $enrollment->amount . ' using card : ' . $card->cardNum;
 $result = $service->create($enrollment);
-$id = isset($result['result']['status']) ? $result['result']['status'] == 'COMPLETED' : null;
-assertTest($id);
+$status = isset($result['result']['status']) ? $result['result']['status'] == 'COMPLETED' : null;
+assertTest($status);
+
+// Test 1 - do an enrollment lookup
+echo PHP_EOL . 'Getting existing Enrollment for ' . $result['result']['id'];
+$result = $service->get($result['result']['id']);
+$status = isset($result['result']['status']) ? $result['result']['status'] == 'COMPLETED' : null;
+assertTest($status);
 
 // Exit with success return code (for travis) 
 exit(0);
