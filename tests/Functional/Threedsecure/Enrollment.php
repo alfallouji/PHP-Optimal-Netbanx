@@ -87,7 +87,7 @@ $result = $service->create($enrollment);
 $status = isset($result['result']['status']) ? $result['result']['status'] == 'COMPLETED' : null;
 assertTest($status);
 
-// Test 1 - do an enrollment lookup
+// Test 2 - get an existing enrollment
 echo PHP_EOL . 'Getting existing Enrollment for ' . $result['result']['id'];
 $result = $service->get($result['result']['id']);
 $status = isset($result['result']['status']) ? $result['result']['status'] == 'COMPLETED' : null;
