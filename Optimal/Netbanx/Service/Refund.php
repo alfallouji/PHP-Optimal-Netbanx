@@ -59,5 +59,15 @@ class Refund extends Base
                 'payload'
             ),
         ),
+
+        // Cancel a settlement
+        'cancelSettlement' => array(
+            'method' => 'PUT',
+            'url' => '/settlements/{ID}',
+            'params' => array(
+                'id',
+                'payload',
+            ),
+        ),
     );
 }
