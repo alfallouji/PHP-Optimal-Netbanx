@@ -87,3 +87,72 @@ Please note that on the Optimal My Account page, the API key contains the Key ID
 
 
 For an example, you can look at the tests/Functional folder.
+
+```
+/**
+ * Helper function for test
+ * 
+ * @param boolean $v Value to assert
+ *
+ * @return void
+ */
+function assertTest($v) 
+{
+    if ($v)
+    {
+        echo "\t[OK]" . PHP_EOL;
+    }
+    else
+    {
+        echo "\t[FAILED]" . PHP_EOL;
+        exit(-1);
+    }
+}
+
+$auth = new \Optimal\Netbanx\Model\Authorization();
+$auth->merchantRefNum = 'refNum_' . uniqid();
+$auth->amount = 10000 + rand(200, 3000);
+$auth->settleWithAuth = false;
+$card = new \Optimal\Netbanx\Model\Card();
+$card->cardNum = '4530910000012345';
+$card->type = 'VI';
+$card->lastDigits = '2345';
+$expiry = new \Optimal\Netbanx\Model\CardExpiry();
+$expiry->month = 11;
+$expiry->year = 2019;
+$card->cardExpiry = $expiry;
+$auth->card = $card;
+$billingDetails = new \Optimal\Netbanx\Model\BillingDetails();
+$billingDetails->street = '511 rue abelard';
+$billingDetails->zip = 'H3E 1B6';
+$billingDetails->city = 'Verdun';
+$billingDetails->country = 'CA';
+$auth->billingDetails = $billingDetails;
+$httpClient = new \Optimal\Netbanx\Client\Http($config['apiKey'], $config['apiPassword'], $config['accountId'], 'staging');
+$service = new \Optimal\Netbanx\Service\Authorization($httpClient);
+
+// Test 1 - create auth
+echo PHP_EOL . 'Testing Authorization creation for ' . $auth->amount;
+$result = $service->create($auth);
+$id = isset($result['result']['id']) ? $result['result']['id'] : null;
+assertTest($id);
+
+// Test 2 - get auth
+echo PHP_EOL . 'Testing Authorization get for ' . $id;
+$result = $service->get($id);
+$getId = isset($result['result']['id']) ? $result['result']['id'] : null;
+assertTest($getId && $getId == $id);
+
+// Test 3 - partial reverse of auth
+$authReversal = new \Optimal\Netbanx\Model\AuthorizationReversal();
+$authReversal->id = $getId;
+$authReversal->amount = rand(500, 1000);
+$authReversal->merchantRefNum = 'Reverse_for_' . $auth->merchantRefNum;
+echo PHP_EOL . 'Testing Authorization reverse for an amount of ' . $authReversal->amount;
+$result = $service->reverse($getId, $authReversal);
+assertTest(isset($result['result']['status']) && $result['result']['status'] == 'COMPLETED');
+
+// Test 4 - settle authorization
+echo PHP_EOL . 'Testing Authorization settlement';
+$result = $service->settle($id, array('merchantRefNum' => $auth->merchantRefNum));
+assertTest($result['code'] == 200 && isset($result['result']['id']));```
